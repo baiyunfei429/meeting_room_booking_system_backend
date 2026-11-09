@@ -109,7 +109,7 @@ export class UserService {
         return arr;
       },[] as string[])
     }
-    return user;
+    return vo;
   }
 
   async register(user: RegisterUserDto) {
@@ -145,4 +145,33 @@ export class UserService {
       return '注册失败';
     }
   }
+
+  async findUserById(userId: number, isAdmin: boolean) {
+    const user =  await this.userRepository.findOne({
+        where: {
+            id: userId,
+            isAdmin
+        },
+        relations: {
+          roles: {
+            permissions: true,
+          }
+        }
+    });
+
+    return {
+        id: user?.id,
+        username: user?.username,
+        isAdmin: user?.isAdmin,
+        roles: user?.roles.map(item => item.name),
+        permissions: user?.roles.reduce((arr, item) => {
+        item.permissions.forEach(permission => {
+          if (arr.indexOf(permission.code) === -1) {
+            arr.push(permission.code);
+          }
+        })
+        return arr;
+      },[] as string[])
+    }
+}
 }
