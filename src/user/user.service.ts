@@ -103,11 +103,11 @@ export class UserService {
       permissions: user.roles.reduce((arr, item) => {
         item.permissions.forEach(permission => {
           if (arr.indexOf(permission.code) === -1) {
-            arr.push(permission.code);
+            arr.push(permission);
           }
         })
         return arr;
-      },[] as string[])
+      },[] as any[])
     }
     return vo;
   }
@@ -166,12 +166,12 @@ export class UserService {
         roles: user?.roles.map(item => item.name),
         permissions: user?.roles.reduce((arr, item) => {
         item.permissions.forEach(permission => {
-          if (arr.indexOf(permission.code) === -1) {
-            arr.push(permission.code);
+          if (arr.indexOf(permission) === -1) {
+            arr.push(permission);
           }
         })
         return arr;
-      },[] as string[])
+      },[] as any[])
     }
 }
 }
