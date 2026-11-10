@@ -9,6 +9,8 @@ import { Role } from './entities/role.entity.js';
 import { Permission } from './entities/permission.entity.js';
 import { LoginUserDto } from './dto/login-user.dto.js';
 import { LoginUserVo } from './vo/login-user.vo.js';
+import { UpdateUserPasswordDto } from './dto/update-user-password.dto.js';
+import { UpdateUserDto } from './dto/udpate-user.dto.js';
 
 @Injectable()
 export class UserService {
@@ -107,7 +109,7 @@ export class UserService {
           }
         })
         return arr;
-      },[] as any[])
+      }, [] as any[])
     }
     return vo;
   }
@@ -147,31 +149,103 @@ export class UserService {
   }
 
   async findUserById(userId: number, isAdmin: boolean) {
-    const user =  await this.userRepository.findOne({
-        where: {
-            id: userId,
-            isAdmin
-        },
-        relations: {
-          roles: {
-            permissions: true,
-          }
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+        isAdmin
+      },
+      relations: {
+        roles: {
+          permissions: true,
         }
+      }
     });
 
     return {
-        id: user?.id,
-        username: user?.username,
-        isAdmin: user?.isAdmin,
-        roles: user?.roles.map(item => item.name),
-        permissions: user?.roles.reduce((arr, item) => {
+      id: user?.id,
+      username: user?.username,
+      isAdmin: user?.isAdmin,
+      roles: user?.roles.map(item => item.name),
+      permissions: user?.roles.reduce((arr, item) => {
         item.permissions.forEach(permission => {
           if (arr.indexOf(permission) === -1) {
             arr.push(permission);
           }
         })
         return arr;
-      },[] as any[])
+      }, [] as any[])
     }
-}
+  }
+
+  async findUserDetailById(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      }
+    })
+    return user;
+  }
+
+  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+    const captcha = await this.redisService.get(`update_password_captcha_${passwordDto.email}`);
+    console.log('captcha>>>', captcha, `update_password_captcha_${passwordDto.email}`);
+
+    if (!captcha) {
+      throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
+    }
+
+    if (passwordDto.captcha !== captcha) {
+      throw new HttpException('验证码不正确', HttpStatus.BAD_REQUEST);
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId
+    });
+    if (!foundUser) {
+      throw new HttpException('用户不存在', HttpStatus.NOT_FOUND);
+    }
+    foundUser.password = md5(passwordDto.password);
+    try {
+      await this.userRepository.save(foundUser);
+      return '密码修改成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '密码修改失败';
+    }
+  }
+
+  async update(userId: number, updateUserDto: UpdateUserDto) {
+    const captcha = await this.redisService.get(`update_user_captcha_${updateUserDto.email}`);
+
+    if (!captcha) {
+      throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
+    }
+
+    if (updateUserDto.captcha !== captcha) {
+      throw new HttpException('验证码不正确', HttpStatus.BAD_REQUEST);
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId
+    });
+    if (!foundUser) {
+      throw new HttpException('用户不存在', HttpStatus.NOT_FOUND);
+    }
+
+    if (updateUserDto.nickName) {
+      foundUser.nickName = updateUserDto.nickName;
+    }
+    if (updateUserDto.headPic) {
+      foundUser.headPic = updateUserDto.headPic;
+    }
+
+    try {
+      await this.userRepository.save(foundUser);
+      return '用户信息修改成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '用户信息修改成功';
+    }
+  }
+
 }
