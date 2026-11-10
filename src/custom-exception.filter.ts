@@ -8,11 +8,13 @@ export class CustomExceptionFilter implements ExceptionFilter {
     response.statusCode = exception.getStatus();
 
     const res = exception.getResponse() as {message: string[]};
+    const raw = (res as any)?.message;
+    const message = Array.isArray(raw) ? raw.join(', ') : raw;
 
     response.json({
       code: exception.getStatus(),
       message: 'fail',
-      data: res?.message?.join(',') || exception.message,
+      data: message || exception.message,
     }).end();
   }
 }
