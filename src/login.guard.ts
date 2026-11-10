@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 import {Request} from 'express';
 import { Permission } from './user/entities/permission.entity.js';
+import { UnLoginException } from './unlogin.filter.js';
 
 interface JwtUserData {
   userId: number;
@@ -42,7 +43,7 @@ export class LoginGuard implements CanActivate {
     const authorization = request.headers.authorization;
 
     if (!authorization) {
-      throw new UnauthorizedException('用户未登录');
+      throw new UnLoginException('用户未登录');
     }
     try {
       const token = authorization.split(' ')[1];
@@ -55,7 +56,7 @@ export class LoginGuard implements CanActivate {
         }
         return true;
     } catch(e) {
-      throw new UnauthorizedException('token 失效，请重新登录');
+      throw new UnLoginException('token 失效，请重新登录');
     }
   }
 }

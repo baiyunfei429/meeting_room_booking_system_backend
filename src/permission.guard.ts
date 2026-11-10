@@ -2,6 +2,7 @@ import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedExceptio
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
+import { UnLoginException } from './unlogin.filter.js';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -35,7 +36,7 @@ export class PermissionGuard implements CanActivate {
         return item.code === curPermission;
       });
       if (!found) {
-        throw new UnauthorizedException('您没有访问该接口的权限');
+        throw new UnLoginException('您没有访问该接口的权限');
       }
     }
     return true;

@@ -10,6 +10,7 @@ import { RequireLogin, UserInfo } from '../custom.decorator.js';
 import { UserDetailVo } from './vo/user-info.vo.js';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto.js';
 import { UpdateUserDto } from './dto/udpate-user.dto.js';
+import { UnLoginException } from '../unlogin.filter.js';
 
 @Controller('user')
 export class UserController {
@@ -97,7 +98,7 @@ export class UserController {
         refresh_token
       }
     } catch (e) {
-      throw new UnauthorizedException('token 已失效，请重新登录');
+      throw new UnLoginException('token 已失效，请重新登录');
     }
   }
 
@@ -128,7 +129,7 @@ export class UserController {
         refresh_token
       }
     } catch (e) {
-      throw new UnauthorizedException('token 已失效，请重新登录');
+      throw new UnLoginException('token 已失效，请重新登录');
     }
   }
 
