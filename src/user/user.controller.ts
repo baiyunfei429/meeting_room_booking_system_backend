@@ -99,6 +99,7 @@ export class UserController {
     vo.accessToken = this.jwtService.sign({
       userId: vo.userInfo.id,
       username: vo.userInfo.username,
+      email: vo.userInfo.email,
       roles: vo.userInfo.roles,
       permissions: vo.userInfo.permissions
     }, {
@@ -138,6 +139,7 @@ export class UserController {
       const access_token = this.jwtService.sign({
         userId: user.id,
         username: user.username,
+        email: user.email,
         roles: user.roles,
         permissions: user.permissions
       }, {
@@ -187,6 +189,7 @@ export class UserController {
       const access_token = this.jwtService.sign({
         userId: user.id,
         username: user.username,
+        email: user.email,
         roles: user.roles,
         permissions: user.permissions
       }, {
@@ -230,6 +233,7 @@ export class UserController {
     vo.accessToken = this.jwtService.sign({
       userId: vo.userInfo.id,
       username: vo.userInfo.username,
+      email: vo.userInfo.email,
       roles: vo.userInfo.roles,
       permissions: vo.userInfo.permissions
     }, {
@@ -271,7 +275,7 @@ export class UserController {
     return vo;
   }
 
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   @ApiBody({
     type: UpdateUserPasswordDto
   })
@@ -280,12 +284,13 @@ export class UserController {
       description: '验证码已失效/不正确'
   })
   @Post(['update_password', 'admin/update_password'])
-  @RequireLogin()
-  async updatePassword(@UserInfo('userId') userId: number, @Body() passwordDto: UpdateUserPasswordDto) {
-    return await this.userService.updatePassword(userId, passwordDto);
+  // @RequireLogin()
+  // async updatePassword(@UserInfo('userId') userId: number, @Body() passwordDto: UpdateUserPasswordDto) {
+  async updatePassword(@Body() passwordDto: UpdateUserPasswordDto) {
+    return await this.userService.updatePassword(passwordDto);
   }
 
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   @ApiQuery({
       name: 'address',
       description: '邮箱地址',
@@ -295,7 +300,7 @@ export class UserController {
       type: String,
       description: '发送成功'
   })
-  @RequireLogin()
+  // @RequireLogin()
   @Get('update_password/captcha')
   async updatePasswordCaptcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);
@@ -329,8 +334,19 @@ export class UserController {
     return await this.userService.update(userId, updateUserDto);
   }
 
+  @ApiBearerAuth()
+  // @ApiQuery({
+  //     name: 'address',
+  //     description: '邮箱地址',
+  //     type: String
+  // })
+  @ApiResponse({
+      status: HttpStatus.OK,
+      description: '发送成功',
+      type: String
+  })
   @Get('update/captcha')
-  async updateCaptcha(@Query('address') address: string) {
+  async updateCaptcha(@UserInfo('email') address: string) {
     const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(`update_user_captcha_${address}`, code, 10 * 60);
