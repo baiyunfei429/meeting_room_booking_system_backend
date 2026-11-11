@@ -17,6 +17,7 @@ import { MeetingRoomModule } from './meeting-room/meeting-room.module.js';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity.js';
 import { BookingModule } from './booking/booking.module.js';
 import { Booking } from './booking/entities/booking.entity.js';
+import { StatisticModule } from './statistic/statistic.module.js';
 
 @Module({
   imports: [
@@ -60,7 +61,8 @@ import { Booking } from './booking/entities/booking.entity.js';
     RedisModule,
     EmailModule,
     MeetingRoomModule,
-    BookingModule
+    BookingModule,
+    StatisticModule
   ],
   controllers: [AppController],
   providers: [
