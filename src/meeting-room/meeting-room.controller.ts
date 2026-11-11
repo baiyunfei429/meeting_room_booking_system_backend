@@ -13,26 +13,6 @@ export class MeetingRoomController {
     return this.meetingRoomService.create(createMeetingRoomDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.meetingRoomService.findAll();
-  // }
-
-  @Get(':id')
-  async find(@Param('id') id: number) {
-    return await this.meetingRoomService.findById(id);
-  }
-
-
-  @Put('update')
-  async update(@Body() meetingRoomDto: UpdateMeetingRoomDto) {
-    return await this.meetingRoomService.update(meetingRoomDto);
-  }
-  @Delete(':id')
-  async delete(@Param('id') id: number) {
-    return await this.meetingRoomService.delete(id);
-  }
-
   @Get('list')
   async list(
     @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo')) pageNo: number,
@@ -42,6 +22,20 @@ export class MeetingRoomController {
     @Query('equipment') equipment: string
   ) {
     return await this.meetingRoomService.find(pageNo, pageSize, name, capacity, equipment);
+  }
+
+  @Get(':id')
+  async find(@Param('id') id: number) {
+    return await this.meetingRoomService.findById(id);
+  }
+
+  @Put('update')
+  async update(@Body() meetingRoomDto: UpdateMeetingRoomDto) {
+    return await this.meetingRoomService.update(meetingRoomDto);
+  }
+  @Delete(':id')
+  async delete(@Param('id') id: number) {
+    return await this.meetingRoomService.delete(id);
   }
 
 }

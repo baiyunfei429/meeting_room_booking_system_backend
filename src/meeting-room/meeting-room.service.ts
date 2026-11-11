@@ -104,7 +104,6 @@ export class MeetingRoomService {
     return 'success';
   }
 
-
   async find(pageNo: number, pageSize: number, name: string, capacity: number, equipment: string) {
     if (pageNo < 1) {
       throw new BadRequestException('页码最小为 1');
