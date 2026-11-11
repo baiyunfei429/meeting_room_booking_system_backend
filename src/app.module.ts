@@ -15,6 +15,8 @@ import { LoginGuard } from './login.guard.js';
 import { PermissionGuard } from './permission.guard.js';
 import { MeetingRoomModule } from './meeting-room/meeting-room.module.js';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity.js';
+import { BookingModule } from './booking/booking.module.js';
+import { Booking } from './booking/entities/booking.entity.js';
 
 @Module({
   imports: [
@@ -41,7 +43,7 @@ import { MeetingRoom } from './meeting-room/entities/meeting-room.entity.js';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
-          entities: [User, Role, Permission, MeetingRoom],
+          entities: [User, Role, Permission, MeetingRoom, Booking],
           poolSize: 10,
           extra: {
               authPlugin: 'sha256_password',
@@ -57,7 +59,8 @@ import { MeetingRoom } from './meeting-room/entities/meeting-room.entity.js';
     UserModule,
     RedisModule,
     EmailModule,
-    MeetingRoomModule
+    MeetingRoomModule,
+    BookingModule
   ],
   controllers: [AppController],
   providers: [

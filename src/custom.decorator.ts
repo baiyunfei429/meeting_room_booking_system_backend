@@ -17,7 +17,7 @@ export const UserInfo = createParamDecorator(
   <K extends keyof JwtUserData>(data: K | undefined, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<Request & { user?: JwtUserData }>();
     const user = request.user;
-    console.log('user 信息:', user, request);
+    console.log('user 信息:', user);
 
     if (!user) return null;
     return data ? user[data] : user;
