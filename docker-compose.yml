@@ -1,0 +1,43 @@
+services:
+  nest-app:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    env_file:
+      - src/.env
+    depends_on:
+      mysql-container:
+        condition: service_healthy
+      redis-container:
+        condition: service_started
+    ports:
+      - "3005:3005"
+    networks:
+      - common-network
+
+  mysql-container:
+    image: mysql
+    volumes:
+      - /Users/zhaihonglian/baiyunfei/white/mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: meeting_room_booking_system
+      MYSQL_ROOT_PASSWORD: "123456"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p123456"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - common-network
+
+  redis-container:
+    image: redis
+    volumes:
+      - /Users/zhaihonglian/baiyunfei/white/redis-volume:/data
+    networks:
+      - common-network
+
+networks:
+  common-network:
+    driver: bridge
