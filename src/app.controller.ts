@@ -20,6 +20,11 @@ export class AppController {
     return 'aaa';
   }
 
+  @Get('health')
+  health() {
+    return { status: 'ok' };
+  }
+
   @Get('bbb')
   bbb() {
     return 'bbb';
