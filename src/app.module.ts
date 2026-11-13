@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import {TypeOrmModule} from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { UserModule } from './user/user.module.js';
@@ -20,6 +20,10 @@ import { Booking } from './booking/entities/booking.entity.js';
 import { StatisticModule } from './statistic/statistic.module.js';
 import { AuthModule } from './auth/auth.module';
 import path from 'path';
+import { utilities, WINSTON_MODULE_NEST_PROVIDER, WinstonModule, WinstonLogger } from 'nest-winston';
+import winston from 'winston';
+import { CustomTypeOrmLogger } from './CustomTypeOrmLogger.js';
+import 'winston-daily-rotate-file';
 
 @Module({
   imports: [
@@ -36,7 +40,7 @@ import path from 'path';
       inject: [ConfigService]
     }),
     TypeOrmModule.forRootAsync({
-      useFactory(configService: ConfigService) {
+      useFactory(configService: ConfigService, logger: WinstonLogger) {
         return {
           type: "mysql",
           host: configService.get('mysql_server_host'),
@@ -46,13 +50,44 @@ import path from 'path';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
+          logger: new CustomTypeOrmLogger(logger),
           entities: [User, Role, Permission, MeetingRoom, Booking],
           poolSize: 10,
           extra: {
-              authPlugin: 'sha256_password',
+            authPlugin: 'sha256_password',
           }
         }
       },
+      inject: [ConfigService, WINSTON_MODULE_NEST_PROVIDER]
+    }),
+    WinstonModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        level: 'debug',
+        transports: [
+          // new winston.transports.File({
+          //   filename: `${process.cwd()}/log`,
+          // }),
+          new winston.transports.DailyRotateFile({
+            level: configService.get('winston_log_level'),
+            dirname: configService.get('winston_log_dirname'),
+            filename: configService.get('winston_log_filename'),
+            datePattern: configService.get('winston_log_date_pattern'),
+            maxSize: configService.get('winston_log_max_size')
+          }),
+          new winston.transports.Console({
+            format: winston.format.combine(
+              winston.format.timestamp(),
+              utilities.format.nestLike(),
+            ),
+          }),
+          // 单独的日志服务
+          new winston.transports.Http({
+            host: 'localhost',
+            port: 3002,
+            path: '/log'
+          })
+        ],
+      }),
       inject: [ConfigService]
     }),
     ConfigModule.forRoot({
@@ -81,4 +116,4 @@ import path from 'path';
     }
   ],
 })
-export class AppModule {}
+export class AppModule { }

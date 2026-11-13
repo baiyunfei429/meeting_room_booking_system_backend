@@ -37,6 +37,7 @@
     "class-validator": "^0.15.1",
     "multer": "^2.5.0",
     "mysql2": "^3.24.6",
+    "nest-winston": "^2.0.0",
     "nodemailer": "^10.4.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
@@ -44,7 +45,9 @@
     "redis": "^6.3.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^1.1.2"
+    "typeorm": "^1.1.2",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^12.0.0",
