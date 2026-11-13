@@ -34,7 +34,7 @@ services:
   mysql-container:
     image: mysql
     volumes:
-      - /Users/zhaihonglian/baiyunfei/white/mysql-data:/var/lib/mysql
+      - /Users/zhaihonglian/baiyunfei/white/mysql-volume:/var/lib/mysql
     environment:
       MYSQL_DATABASE: meeting_room_booking_system
       MYSQL_ROOT_PASSWORD: "123456"
