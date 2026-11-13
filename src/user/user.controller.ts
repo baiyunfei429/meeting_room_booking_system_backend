@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, DefaultValuePipe, Get, HttpStatus, Inject, NotFoundException, ParseIntPipe, Post, Query, UnauthorizedException, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, DefaultValuePipe, Get, HttpStatus, Inject, NotFoundException, ParseIntPipe, Post, Query, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service.js';
 import { RegisterUserDto } from './dto/register-user.dto.js';
 import { EmailService } from '../email/email.service.js';
@@ -18,6 +18,7 @@ import { RefreshTokenVo } from './vo/refresh-token.vo.js';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'node:path';
 import { storage } from '../my-file-storage.js';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('用户管理模块')
 @Controller('user')
@@ -95,9 +96,11 @@ export class UserController {
     description: '用户信息和 token',
     type: LoginUserVo
   })
+  @UseGuards(AuthGuard('local'))
   @Post('login')
-  async userLogin(@Body() loginUser: LoginUserDto) {
-    const vo = await this.userService.login(loginUser, false);
+  // async userLogin(@Body() loginUser: LoginUserDto) {
+  async userLogin(@UserInfo() vo: LoginUserVo) {
+    // const vo = await this.userService.login(loginUser, false);
 
     vo.accessToken = this.jwtService.sign({
       userId: vo.userInfo.id,

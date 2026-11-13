@@ -18,6 +18,7 @@ import { MeetingRoom } from './meeting-room/entities/meeting-room.entity.js';
 import { BookingModule } from './booking/booking.module.js';
 import { Booking } from './booking/entities/booking.entity.js';
 import { StatisticModule } from './statistic/statistic.module.js';
+import { AuthModule } from './auth/auth.module';
 import path from 'path';
 
 @Module({
@@ -64,7 +65,8 @@ import path from 'path';
     EmailModule,
     MeetingRoomModule,
     BookingModule,
-    StatisticModule
+    StatisticModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [
